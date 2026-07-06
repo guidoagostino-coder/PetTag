@@ -485,4 +485,4 @@ async function verMascotas(numero) {
   resetSesion(numero)
 }
 
-module.exports = { procesarMensaje }
+module.exports = { procesarMensaje, enviar }
