@@ -327,7 +327,7 @@ input::placeholder { color: var(--g5); }
   <div class="bg-circle bg-circle-1"></div>
   <div class="bg-circle bg-circle-2"></div>
 
-  <a href="index.html" class="left-logo">Pet<span>Tag</span></a>
+  <a href="/" class="left-logo">Pet<span>Tag</span></a>
 
   <div class="left-center">
     <div>
@@ -544,7 +544,7 @@ async function login() {
     return
   }
 
-  window.location.href = 'panel.html'
+  window.location.href = '/panel'
 }
 
 // ── REGISTRO ──
@@ -606,7 +606,7 @@ async function olvideClave() {
 
 // ── VERIFICAR SESIÓN ──
 sb.auth.getSession().then(({ data }) => {
-  if (data.session) window.location.href = 'panel.html'
+  if (data.session) window.location.href = '/panel'
 })
 
 // ── ENTER ──
