@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PetTag — Ficha de mascota</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Syne:wght@700;800&display=swap');
+
+:root {
+  --verde:     #1A8C5B;
+  --verde-cl:  #E8F5EE;
+  --naranja:   #F4622A;
+  --naranja-cl:#FEF0EB;
+  --negro:     #111111;
+  --gris-os:   #3D3D3D;
+  --gris-md:   #7A7A7A;
+  --gris-cl:   #F5F5F3;
+  --borde:     #E0E0DC;
+  --blanco:    #FFFFFF;
+  --rojo:      #C0392B;
+  --rojo-cl:   #FEECEC;
+  --radio:     12px;
+  --sombra:    0 2px 12px rgba(0,0,0,0.07);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Inter', sans-serif;
+  background: var(--gris-cl);
+  color: var(--negro);
+  min-height: 100vh;
+}
+
+/* ── NAV ── */
+nav {
+  background: var(--blanco);
+  border-bottom: 1px solid var(--borde);
+  padding: 0 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 56px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.logo { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 20px; color: var(--verde); }
+.logo span { color: var(--naranja); }
+
+/* ── LOADING ── */
+#loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 80vh;
+  gap: 16px;
+}
+.spinner {
+  width: 44px; height: 44px;
+  border: 4px solid var(--verde-cl);
+  border-top-color: var(--verde);
+  border-radius: 50%;
+  animation: spin .8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── ERROR ── */
+#error-box {
+  display: none;
+  max-width: 400px;
+  margin: 60px auto;
+  text-align: center;
+  padding: 32px 24px;
+  background: var(--blanco);
+  border-radius: var(--radio);
+  border: 1px solid var(--borde);
+}
+#error-box .ico { font-size: 48px; margin-bottom: 14px; }
+#error-box h2 { font-size: 18px; font-weight: 700; margin-bottom: 8px; }
+#error-box p  { font-size: 13px; color: var(--gris-md); }
+
+/* ── PANTALLA SIN ACTIVAR ── */
+#sin-activar {
+  display: none;
+  max-width: 440px;
+  margin: 0 auto;
+  padding: 24px 16px;
+}
+.activar-header {
+  background: var(--verde);
+  color: white;
+  border-radius: var(--radio);
+  padding: 32px 24px;
+  text-align: center;
+  margin-bottom: 20px;
+}
+.activar-header .ico { font-size: 48px; margin-bottom: 12px; }
+.activar-header h2 { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 800; margin-bottom: 6px; }
+.activar-header p  { font-size: 13px; opacity: .85; }
+
+/* ── FICHA PÚBLICA ── */
+#ficha {
+  display: none;
+  max-width: 500px;
+  margin: 0 auto;
+  padding: 20px 16px 48px;
+}
+
+/* Alerta perdida */
+.alerta-perdida {
+  background: var(--rojo);
+  color: white;
+  border-radius: var(--radio);
+  padding: 16px 18px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+  animation: pulso 2s ease-in-out infinite;
+}
+@keyframes pulso { 0%,100%{opacity:1} 50%{opacity:.9} }
+.alerta-perdida .ico { font-size: 28px; flex-shrink: 0; }
+.alerta-perdida h3  { font-size: 15px; font-weight: 700; }
+.alerta-perdida p   { font-size: 12px; opacity: .9; }
+.recompensa-tag {
+  margin-left: auto; flex-shrink: 0;
+  background: white; color: var(--rojo);
+  padding: 6px 12px; border-radius: 7px;
+  font-size: 12px; font-weight: 700;
+}
+
+/* Hero */
+.pet-hero {
+  background: var(--verde);
+  border-radius: var(--radio);
+  padding: 28px 20px 20px;
+  text-align: center;
+  color: white;
+  margin-bottom: 14px;
+}
+.pet-avatar {
+  width: 100px; height: 100px;
+  border-radius: 50%;
+  background: rgba(255,255,255,.2);
+  border: 3px solid rgba(255,255,255,.4);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 48px;
+  margin: 0 auto 14px;
+  overflow: hidden;
+}
+.pet-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.pet-nombre { font-family: 'Syne', sans-serif; font-size: 26px; font-weight: 800; margin-bottom: 4px; }
+.pet-sub { font-size: 13px; opacity: .85; margin-bottom: 12px; }
+.pet-badges { display: flex; justify-content: center; gap: 6px; flex-wrap: wrap; }
+
+/* Botones contacto */
+.contact-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; margin-top: 16px; }
+.contact-btn {
+  display: flex; flex-direction: column; align-items: center; gap: 5px;
+  padding: 12px 6px; border-radius: 9px;
+  border: 1.5px solid rgba(255,255,255,.3);
+  background: rgba(255,255,255,.15);
+  color: white; font-size: 11px; font-weight: 600;
+  cursor: pointer; transition: all .15s; font-family: 'Inter', sans-serif;
+}
+.contact-btn:hover { background: rgba(255,255,255,.25); }
+.contact-btn .ico { font-size: 20px; }
+
+/* Cards */
+.card {
+  background: var(--blanco);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio);
+  box-shadow: var(--sombra);
+  overflow: hidden;
+  margin-bottom: 12px;
+}
+.card-header {
+  padding: 13px 16px;
+  border-bottom: 1px solid var(--borde);
+  font-size: 13px; font-weight: 700;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.card-body { padding: 16px; }
+
+/* Dato row */
+.dato-row {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 8px 0; border-bottom: 1px solid var(--borde); font-size: 13px;
+}
+.dato-row:last-child { border-bottom: none; }
+.dato-key { color: var(--gris-md); font-size: 12px; }
+.dato-val { font-weight: 500; }
+
+/* Alerta médica */
+.alerta-med {
+  background: var(--naranja-cl); border: 1px solid #F4C2AA;
+  border-radius: 8px; padding: 10px 13px;
+  font-size: 13px; font-weight: 500; color: #8B3A1A;
+  margin-bottom: 8px; display: flex; gap: 7px;
+}
+
+/* Tags comportamiento */
+.tags-wrap { display: flex; flex-wrap: wrap; gap: 6px; }
+.tag { padding: 5px 11px; border-radius: 20px; font-size: 12px; font-weight: 500; }
+.tag-ok   { background: var(--verde-cl); color: var(--verde); }
+.tag-warn { background: var(--naranja-cl); color: var(--naranja); }
+.tag-gris { background: var(--gris-cl); color: var(--gris-os); border: 1px solid var(--borde); }
+
+/* Botones reportar */
+.report-btn {
+  display: flex; align-items: center; gap: 12px;
+  padding: 14px 16px; border: 1.5px solid var(--borde);
+  border-radius: 10px; background: white; width: 100%;
+  margin-bottom: 8px; cursor: pointer; text-align: left;
+  transition: all .15s; font-family: 'Inter', sans-serif;
+}
+.report-btn:hover { border-color: var(--verde); background: var(--verde-cl); }
+.report-btn .ico { font-size: 22px; flex-shrink: 0; }
+.report-btn strong { display: block; font-size: 13px; font-weight: 600; color: var(--negro); }
+.report-btn small  { font-size: 11px; color: var(--gris-md); }
+
+/* Formulario reporte */
+#form-reporte { display: none; }
+.mini-label { font-size: 12px; font-weight: 600; color: var(--gris-os); margin-bottom: 5px; display: block; }
+.mini-input {
+  width: 100%; padding: 10px 13px;
+  border: 1.5px solid var(--borde); border-radius: 8px;
+  font-family: 'Inter', sans-serif; font-size: 13px;
+  margin-bottom: 12px; outline: none;
+}
+.mini-input:focus { border-color: var(--verde); }
+textarea.mini-input { resize: vertical; min-height: 80px; }
+
+/* Badges */
+.badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 3px 9px; border-radius: 20px; font-size: 11px; font-weight: 600;
+}
+.badge-verde   { background: var(--verde-cl);   color: var(--verde); }
+.badge-rojo    { background: var(--rojo-cl);     color: var(--rojo); }
+.badge-naranja { background: var(--naranja-cl);  color: var(--naranja); }
+.badge-blanco  { background: rgba(255,255,255,.2); color: white; }
+
+/* Botones */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 7px;
+  padding: 11px 20px; border-radius: 8px; border: none;
+  font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 600;
+  cursor: pointer; transition: all .15s; width: 100%;
+}
+.btn-primary { background: var(--verde); color: white; }
+.btn-primary:hover { background: #157a4e; }
+.btn-ghost { background: var(--gris-cl); color: var(--gris-os); border: 1px solid var(--borde); margin-top: 8px; }
+
+/* Success */
+#success-box {
+  display: none;
+  text-align: center;
+  padding: 40px 24px;
+  background: var(--blanco);
+  border-radius: var(--radio);
+  border: 1px solid var(--borde);
+}
+.success-ico {
+  width: 72px; height: 72px;
+  background: var(--verde-cl); border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 36px; margin: 0 auto 16px;
+  animation: pop .4s cubic-bezier(.175,.885,.32,1.275);
+}
+@keyframes pop { from{transform:scale(0);opacity:0} to{transform:scale(1);opacity:1} }
+
+/* Avistamiento item */
+.avist-item {
+  display: flex; gap: 10px; padding: 10px 0;
+  border-bottom: 1px solid var(--borde); font-size: 13px;
+}
+.avist-item:last-child { border-bottom: none; }
+.avist-ico { font-size: 18px; }
+.avist-info strong { display: block; font-weight: 600; font-size: 12px; }
+.avist-info span   { color: var(--gris-md); font-size: 11px; }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">Pet<span>Tag</span></div>
+  <div style="font-size:12px;color:var(--gris-md);" id="nav-codigo"></div>
+</nav>
+
+<!-- LOADING -->
+<div id="loading">
+  <div class="spinner"></div>
+  <div style="font-size:14px;font-weight:600;color:var(--gris-os);">Buscando mascota...</div>
+</div>
+
+<!-- ERROR -->
+<div id="error-box">
+  <div class="ico">❓</div>
+  <h2>QR no encontrado</h2>
+  <p>Este código no existe en nuestra base de datos. Verificá que el tag sea original.</p>
+</div>
+
+<!-- SIN ACTIVAR -->
+<div id="sin-activar">
+  <div class="activar-header">
+    <div class="ico">🏷️</div>
+    <h2>Tag sin activar</h2>
+    <p>Este tag todavía no tiene mascota asociada.<br>¿Sos el dueño? Creá tu perfil gratis.</p>
+  </div>
+  <div class="card">
+    <div class="card-header">Crear cuenta y activar tag</div>
+    <div class="card-body">
+      <label class="mini-label">Nombre completo</label>
+      <input class="mini-input" id="reg-nombre" type="text" placeholder="Juan Pérez">
+      <label class="mini-label">Email</label>
+      <input class="mini-input" id="reg-email" type="email" placeholder="juan@email.com">
+      <label class="mini-label">WhatsApp</label>
+      <input class="mini-input" id="reg-whatsapp" type="tel" placeholder="+54 9 11 1234-5678">
+      <div style="margin:16px 0 10px;padding-top:16px;border-top:1px solid var(--borde);">
+        <div style="font-size:12px;font-weight:700;color:var(--gris-md);text-transform:uppercase;letter-spacing:.5px;margin-bottom:14px;">Datos de tu mascota</div>
+        <label class="mini-label">Nombre</label>
+        <input class="mini-input" id="reg-mascota-nombre" type="text" placeholder="Toby">
+        <label class="mini-label">Especie</label>
+        <select class="mini-input" id="reg-especie">
+          <option value="perro">🐕 Perro</option>
+          <option value="gato">🐈 Gato</option>
+          <option value="otro">Otro</option>
+        </select>
+        <label class="mini-label">Raza</label>
+        <input class="mini-input" id="reg-raza" type="text" placeholder="Beagle">
+      </div>
+      <button class="btn btn-primary" onclick="registrar()">Activar tag y crear perfil →</button>
+      <div id="reg-error" style="color:var(--rojo);font-size:12px;margin-top:10px;display:none;"></div>
+    </div>
+  </div>
+</div>
+
+<!-- FICHA PÚBLICA -->
+<div id="ficha">
+
+  <!-- Alerta perdida (oculta por defecto) -->
+  <div id="alerta-perdida-box" class="alerta-perdida" style="display:none;">
+    <span class="ico">🚨</span>
+    <div>
+      <h3>¡MASCOTA PERDIDA!</h3>
+      <p id="perdida-fecha"></p>
+    </div>
+    <div id="recompensa-tag" class="recompensa-tag" style="display:none;"></div>
+  </div>
+
+  <!-- Hero -->
+  <div class="pet-hero">
+    <div class="pet-avatar" id="pet-avatar">🐾</div>
+    <div class="pet-nombre" id="pet-nombre">—</div>
+    <div class="pet-sub" id="pet-sub">—</div>
+    <div class="pet-badges" id="pet-badges"></div>
+    <div class="contact-grid">
+      <button class="contact-btn" id="btn-llamar" onclick="llamar()"><span class="ico">📞</span>Llamar</button>
+      <button class="contact-btn" id="btn-wsp" onclick="whatsapp()"><span class="ico">💬</span>WhatsApp</button>
+      <button class="contact-btn" onclick="email()"><span class="ico">📧</span>Email</button>
+    </div>
+  </div>
+
+  <!-- Identificación -->
+  <div class="card">
+    <div class="card-header">🐾 Identificación</div>
+    <div class="card-body" id="datos-identificacion"></div>
+  </div>
+
+  <!-- Alertas médicas (solo si hay) -->
+  <div class="card" id="card-medico" style="display:none;">
+    <div class="card-header">
+      ⚠️ Alertas médicas
+      <span class="badge badge-naranja">Urgente leer</span>
+    </div>
+    <div class="card-body" id="datos-medico"></div>
+  </div>
+
+  <!-- Comportamiento (solo si hay) -->
+  <div class="card" id="card-comportamiento" style="display:none;">
+    <div class="card-header">🧠 Comportamiento</div>
+    <div class="card-body" id="datos-comportamiento"></div>
+  </div>
+
+  <!-- Alimentación (solo si hay) -->
+  <div class="card" id="card-alimentacion" style="display:none;">
+    <div class="card-header">🍖 Alimentación</div>
+    <div class="card-body" id="datos-alimentacion"></div>
+  </div>
+
+  <!-- Reportar ubicación -->
+  <div class="card" id="card-reportar">
+    <div class="card-header">📍 ¿Encontraste esta mascota?</div>
+    <div class="card-body">
+      <div id="botones-reporte">
+        <button class="report-btn" onclick="mostrarForm('la_encontre')">
+          <span class="ico">🐾</span>
+          <div><strong>La encontré</strong><small>La tengo conmigo y está a salvo</small></div>
+        </button>
+        <button class="report-btn" onclick="mostrarForm('la_estoy_viendo')">
+          <span class="ico">👁️</span>
+          <div><strong>La estoy viendo ahora</strong><small>La vi pero no pude agarrarla</small></div>
+        </button>
+        <button class="report-btn" onclick="mostrarForm('la_tengo_segura')">
+          <span class="ico">🔒</span>
+          <div><strong>La tengo resguardada</strong><small>Está a salvo, pueden venir</small></div>
+        </button>
+      </div>
+
+      <div id="form-reporte">
+        <label class="mini-label">Tu nombre (opcional)</label>
+        <input class="mini-input" id="rep-nombre" type="text" placeholder="Sebastián R.">
+        <label class="mini-label">Tu teléfono</label>
+        <input class="mini-input" id="rep-telefono" type="tel" placeholder="+54 9 11 ...">
+        <label class="mini-label">Mensaje para el dueño</label>
+        <textarea class="mini-input" id="rep-mensaje" placeholder="Lo encontré en..."></textarea>
+        <div style="background:var(--verde-cl);border-radius:8px;padding:10px 12px;font-size:12px;color:var(--verde);margin-bottom:14px;">
+          📍 Se enviará tu ubicación GPS automáticamente
+        </div>
+        <button class="btn btn-primary" onclick="enviarReporte()">Enviar reporte al dueño →</button>
+        <button class="btn btn-ghost" onclick="cancelarReporte()">Cancelar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Avistamientos (solo si está perdida) -->
+  <div class="card" id="card-avistamientos" style="display:none;">
+    <div class="card-header">🗺️ Reportes recientes</div>
+    <div class="card-body" id="lista-avistamientos"></div>
+  </div>
+
+  <!-- Success reporte -->
+  <div id="success-box">
+    <div class="success-ico">✅</div>
+    <div style="font-family:'Syne',sans-serif;font-size:20px;font-weight:800;margin-bottom:8px;">¡Reporte enviado!</div>
+    <p style="font-size:13px;color:var(--gris-md);line-height:1.6;">El dueño recibió una notificación con tu ubicación. ¡Gracias por ayudar!</p>
+  </div>
+
+</div><!-- fin #ficha -->
+
+<script>
+// ── CONFIG ──────────────────────────────────────────────────
+const API = 'https://pettag-production.up.railway.app'
+
+// ── ESTADO GLOBAL ───────────────────────────────────────────
+let mascotaId   = null
+let tipoReporte = null
+let duenoDatos  = null
+
+// ── INIT ────────────────────────────────────────────────────
+async function init() {
+  // Leer el código del QR desde la URL: /mascota/PET-001
+  const partes = window.location.pathname.split('/')
+  const codigo = partes[partes.length - 1] || 'PET-001'
+
+  document.getElementById('nav-codigo').textContent = codigo
+
+  try {
+    const resp = await fetch(`${API}/mascota/${codigo}`, {
+      headers: { 'ngrok-skip-browser-warning': 'true' }
+    })
+    const data = await resp.json()
+
+    document.getElementById('loading').style.display = 'none'
+
+    if (data.error) {
+      document.getElementById('error-box').style.display = 'block'
+      return
+    }
+
+    if (data.estado === 'sin_activar') {
+      // Guardar el código para usarlo en el registro
+      window._codigoQR = codigo
+      document.getElementById('sin-activar').style.display = 'block'
+      return
+    }
+
+    // Ficha completa
+    renderFicha(data)
+
+  } catch (e) {
+    document.getElementById('loading').style.display = 'none'
+    document.getElementById('error-box').style.display = 'block'
+  }
+}
+
+// ── RENDER FICHA ────────────────────────────────────────────
+function renderFicha(data) {
+  const { mascota, medico, contactos, avistamientos } = data
+
+  mascotaId  = mascota.id
+  duenoDatos = { telefono: null, whatsapp: null, email: null }
+
+  // Guardar datos del dueño para los botones de contacto
+  // (vendrán del backend en la próxima versión con auth)
+
+  // Alerta perdida
+  if (mascota.estado_actual === 'perdido') {
+    document.getElementById('alerta-perdida-box').style.display = 'flex'
+    const desde = mascota.perdido_desde
+      ? new Date(mascota.perdido_desde).toLocaleDateString('es-AR')
+      : 'fecha desconocida'
+    document.getElementById('perdida-fecha').textContent = `Reportada el ${desde}`
+
+    if (mascota.recompensa) {
+      const rt = document.getElementById('recompensa-tag')
+      rt.style.display = 'block'
+      rt.textContent = `💰 $${Number(mascota.recompensa).toLocaleString('es-AR')}`
+    }
+  }
+
+  // Avatar
+  const avatar = document.getElementById('pet-avatar')
+  if (mascota.foto_principal_url) {
+    avatar.innerHTML = `<img src="${mascota.foto_principal_url}" alt="${mascota.nombre}">`
+  } else {
+    const emojis = { perro: '🐕', gato: '🐈', otro: '🐾' }
+    avatar.textContent = emojis[mascota.especie] || '🐾'
+  }
+
+  // Nombre y subtítulo
+  document.getElementById('pet-nombre').textContent = mascota.nombre
+
+  const partes = []
+  if (mascota.raza)          partes.push(mascota.raza)
+  if (mascota.sexo)          partes.push(mascota.sexo === 'macho' ? 'Macho' : 'Hembra')
+  if (mascota.fecha_nacimiento) {
+    const edad = calcularEdad(mascota.fecha_nacimiento)
+    partes.push(edad)
+  }
+  document.getElementById('pet-sub').textContent = partes.join(' · ')
+
+  // Badges
+  const badges = document.getElementById('pet-badges')
+  const estadoLabel = {
+    en_casa: '✓ En casa', perdido: '🚨 Perdido',
+    en_cuidado: 'En cuidado', fallecido: 'Fallecido'
+  }
+  badges.innerHTML = `<span class="badge badge-${mascota.estado_actual === 'perdido' ? 'rojo' : 'verde'}">${estadoLabel[mascota.estado_actual] || mascota.estado_actual}</span>`
+  if (mascota.estado_reproductivo === 'castrado') badges.innerHTML += `<span class="badge badge-blanco">Castrado</span>`
+  if (mascota.peso_kg) badges.innerHTML += `<span class="badge badge-blanco">${mascota.peso_kg} kg</span>`
+
+  // Identificación
+  const ident = document.getElementById('datos-identificacion')
+  const filas = [
+    ['Especie', mascota.especie],
+    ['Raza', mascota.raza],
+    ['Color', mascota.color],
+    ['Peso', mascota.peso_kg ? `${mascota.peso_kg} kg` : null],
+  ]
+  if (medico?.num_microchip) filas.push(['Microchip', medico.num_microchip])
+  ident.innerHTML = filas
+    .filter(([,v]) => v)
+    .map(([k,v]) => `<div class="dato-row"><span class="dato-key">${k}</span><span class="dato-val">${v}</span></div>`)
+    .join('')
+
+  // Perfil médico
+  if (medico) {
+    const alertas = medico.alertas_criticas || []
+    const tieneAlerta = alertas.length > 0 || medico.medicacion_actual || medico.alergias
+
+    if (tieneAlerta) {
+      document.getElementById('card-medico').style.display = 'block'
+      let html = ''
+      alertas.forEach(a => { html += `<div class="alerta-med">⚠️ ${a}</div>` })
+      if (medico.alergias) html += `<div class="alerta-med">🚫 Alérgico a: ${medico.alergias}</div>`
+      if (medico.medicacion_actual) {
+        html += `<div class="dato-row" style="margin-top:10px;"><span class="dato-key">Medicación actual</span><span class="dato-val">${medico.medicacion_actual}</span></div>`
+      }
+      if (medico.vet_nombre) {
+        html += `<div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--borde);">
+          <div style="font-size:11px;color:var(--gris-md);margin-bottom:4px;">Veterinario de cabecera</div>
+          <div style="font-size:13px;font-weight:500;">${medico.vet_nombre}${medico.vet_clinica ? ' · ' + medico.vet_clinica : ''}</div>
+          ${medico.vet_telefono ? `<a href="tel:${medico.vet_telefono}" style="color:var(--verde);font-size:13px;font-weight:600;text-decoration:none;">📞 ${medico.vet_telefono}</a>` : ''}
+        </div>`
+      }
+      document.getElementById('datos-medico').innerHTML = html
+    }
+  }
+
+  // Comportamiento
+  if (mascota.comportamiento) {
+    document.getElementById('card-comportamiento').style.display = 'block'
+    const tags = mascota.comportamiento.split(',').map(t => t.trim())
+    document.getElementById('datos-comportamiento').innerHTML =
+      `<div class="tags-wrap">${tags.map(t => `<span class="tag tag-gris">${t}</span>`).join('')}</div>`
+  }
+
+  // Alimentación
+  if (mascota.marca_alimento || mascota.alimentos_prohibidos) {
+    document.getElementById('card-alimentacion').style.display = 'block'
+    let html = ''
+    if (mascota.marca_alimento) html += `<div class="dato-row"><span class="dato-key">Marca habitual</span><span class="dato-val">${mascota.marca_alimento}</span></div>`
+    if (mascota.alimentos_prohibidos) html += `<div class="dato-row"><span class="dato-key">Prohibidos</span><span class="dato-val" style="color:var(--rojo)">⛔ ${mascota.alimentos_prohibidos}</span></div>`
+    document.getElementById('datos-alimentacion').innerHTML = html
+  }
+
+  // Avistamientos (si está perdida)
+  if (mascota.estado_actual === 'perdido' && avistamientos?.length > 0) {
+    document.getElementById('card-avistamientos').style.display = 'block'
+    const iconos = { la_encontre: '🐾', la_estoy_viendo: '👁️', la_tengo_segura: '🔒' }
+    const labels = { la_encontre: 'La encontró', la_estoy_viendo: 'La estaba viendo', la_tengo_segura: 'La tiene resguardada' }
+    document.getElementById('lista-avistamientos').innerHTML = avistamientos.map(a => `
+      <div class="avist-item">
+        <span class="avist-ico">${iconos[a.tipo_reporte] || '📍'}</span>
+        <div class="avist-info">
+          <strong>${a.nombre_rescatista || 'Anónimo'} — ${labels[a.tipo_reporte]}</strong>
+          <span>${a.direccion_aproximada || ''} · ${new Date(a.creado_en).toLocaleString('es-AR')}</span>
+        </div>
+      </div>
+    `).join('')
+  }
+
+  document.getElementById('ficha').style.display = 'block'
+}
+
+// ── REGISTRO ────────────────────────────────────────────────
+async function registrar() {
+  const nombre   = document.getElementById('reg-nombre').value.trim()
+  const email    = document.getElementById('reg-email').value.trim()
+  const whatsapp = document.getElementById('reg-whatsapp').value.trim()
+  const mascNombre = document.getElementById('reg-mascota-nombre').value.trim()
+  const especie  = document.getElementById('reg-especie').value
+  const raza     = document.getElementById('reg-raza').value.trim()
+  const errEl    = document.getElementById('reg-error')
+
+  if (!nombre || !email || !mascNombre) {
+    errEl.style.display = 'block'
+    errEl.textContent = 'Nombre, email y nombre de la mascota son obligatorios.'
+    return
+  }
+
+  errEl.style.display = 'none'
+
+  // 1. Crear dueño
+  const respDueno = await fetch(`${API}/duenos/registro`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'ngrok-skip-browser-warning': 'true' },
+    body: JSON.stringify({ nombre_completo: nombre, email, whatsapp })
+  })
+  const dataDueno = await respDueno.json()
+  if (dataDueno.error) { errEl.style.display = 'block'; errEl.textContent = dataDueno.error; return }
+
+  // 2. Crear mascota y vincular QR
+  const respMascota = await fetch(`${API}/mascotas`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'ngrok-skip-browser-warning': 'true' },
+    body: JSON.stringify({
+      dueno_id: dataDueno.dueno.id,
+      codigo_qr: window._codigoQR,
+      nombre: mascNombre, especie, raza
+    })
+  })
+  const dataMascota = await respMascota.json()
+  if (dataMascota.error) { errEl.style.display = 'block'; errEl.textContent = dataMascota.error; return }
+
+  // 3. Recargar la ficha
+  window.location.reload()
+}
+
+// ── REPORTAR UBICACIÓN ───────────────────────────────────────
+function mostrarForm(tipo) {
+  tipoReporte = tipo
+  document.getElementById('botones-reporte').style.display = 'none'
+  document.getElementById('form-reporte').style.display = 'block'
+}
+
+function cancelarReporte() {
+  document.getElementById('botones-reporte').style.display = 'block'
+  document.getElementById('form-reporte').style.display = 'none'
+}
+
+async function enviarReporte() {
+  const nombre   = document.getElementById('rep-nombre').value.trim()
+  const telefono = document.getElementById('rep-telefono').value.trim()
+  const mensaje  = document.getElementById('rep-mensaje').value.trim()
+
+  // Obtener GPS
+  let latitud = -34.6037, longitud = -58.3816 // Buenos Aires por defecto
+  try {
+    const pos = await new Promise((res, rej) =>
+      navigator.geolocation.getCurrentPosition(res, rej, { timeout: 5000 })
+    )
+    latitud  = pos.coords.latitude
+    longitud = pos.coords.longitude
+  } catch {}
+
+  const resp = await fetch(`${API}/avistamientos`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'ngrok-skip-browser-warning': 'true' },
+    body: JSON.stringify({
+      mascota_id: mascotaId,
+      tipo_reporte: tipoReporte,
+      latitud, longitud,
+      nombre_rescatista: nombre,
+      telefono_rescatista: telefono,
+      mensaje
+    })
+  })
+
+  const data = await resp.json()
+
+  if (data.ok) {
+    document.getElementById('card-reportar').style.display = 'none'
+    document.getElementById('success-box').style.display = 'block'
+  }
+}
+
+// ── CONTACTO ─────────────────────────────────────────────────
+function llamar()    { if (duenoDatos?.telefono) window.location.href = `tel:${duenoDatos.telefono}` }
+function whatsapp()  { if (duenoDatos?.whatsapp) window.open(`https://wa.me/${duenoDatos.whatsapp.replace(/\D/g,'')}`) }
+function email()     { if (duenoDatos?.email)    window.location.href = `mailto:${duenoDatos.email}` }
+
+// ── UTILIDADES ───────────────────────────────────────────────
+function calcularEdad(fechaNac) {
+  const hoy   = new Date()
+  const nac   = new Date(fechaNac)
+  const años  = hoy.getFullYear() - nac.getFullYear()
+  const meses = hoy.getMonth() - nac.getMonth()
+  if (años === 0) return `${meses} meses`
+  if (años === 1) return `1 año`
+  return `${años} años`
+}
+
+// ── ARRANCAR ─────────────────────────────────────────────────
+init()
+</script>
+</body>
+</html>
