@@ -21,6 +21,14 @@ app.get('/health', (req, res) => {
   res.json({ ok: true, mensaje: 'PetTag API corriendo 🐾' })
 })
 
+app.get('/login', (req, res) => {
+  res.sendFile(path.join(__dirname, 'login.html'))
+})
+
+app.get('/panel', (req, res) => {
+  res.sendFile(path.join(__dirname, 'panel.html'))
+})
+
 // ============================================================
 //  SERVIR HTML cuando accede un navegador
 // ============================================================
