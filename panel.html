@@ -418,7 +418,7 @@ textarea { resize: vertical; min-height: 80px; }
 
 <!-- ── SIDEBAR ── -->
 <aside class="sidebar">
-  <a href="index.html" class="sidebar-logo">Pet<span>Tag</span></a>
+  <a href="/" class="sidebar-logo">Pet<span>Tag</span></a>
 
   <div class="sidebar-section">Principal</div>
   <button class="nav-item activo" onclick="ir('dashboard')">
@@ -599,7 +599,7 @@ textarea { resize: vertical; min-height: 80px; }
                 <div style="font-size:12px;color:var(--g4);" id="plan-desc-display">Funciones básicas activas</div>
               </div>
             </div>
-            <a href="index.html#planes" class="btn btn-naranja" style="width:100%;justify-content:center;">Mejorar plan →</a>
+            <a href="/#planes" class="btn btn-naranja" style="width:100%;justify-content:center;">Mejorar plan →</a>
           </div>
         </div>
 
@@ -753,7 +753,7 @@ let tabSaludActual  = 'vacuna'
 // ── INIT ──
 async function init() {
   const { data } = await sb.auth.getSession()
-  if (!data.session) { window.location.href = 'login.html'; return }
+  if (!data.session) { window.location.href = '/login'; return }
   sesion = data.session
 
   await cargarDueno()
@@ -1124,7 +1124,7 @@ async function cambiarClave() {
 // ── LOGOUT ──
 async function logout() {
   await sb.auth.signOut()
-  window.location.href = 'login.html'
+  window.location.href = '/login'
 }
 
 // ── NAVEGACIÓN ──
