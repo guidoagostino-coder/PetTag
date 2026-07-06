@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PetTag — Tu mascota, siempre conectada</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap');
+
+:root {
+  --negro:   #000000;
+  --blanco:  #FFFFFF;
+  --naranja: #FF5C00;
+  --g1: #111111;
+  --g2: #222222;
+  --g3: #444444;
+  --g4: #888888;
+  --g5: #BBBBBB;
+  --g6: #E8E8E8;
+  --g7: #F4F4F4;
+  --g8: #FAFAFA;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'Inter', sans-serif;
+  background: var(--blanco);
+  color: var(--negro);
+  line-height: 1.6;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── NAV ── */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  padding: 0 48px; height: 60px;
+  display: flex; align-items: center; justify-content: space-between;
+  background: rgba(255,255,255,0.95);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--g6);
+}
+.logo { font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 20px; color: var(--negro); text-decoration: none; letter-spacing: -0.5px; }
+.logo span { color: var(--naranja); }
+.nav-links { display: flex; align-items: center; gap: 36px; list-style: none; }
+.nav-links a { font-size: 14px; font-weight: 500; color: var(--g4); text-decoration: none; transition: color .15s; }
+.nav-links a:hover { color: var(--negro); }
+.nav-cta { display: flex; gap: 8px; align-items: center; }
+
+/* ── BOTONES ── */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 7px;
+  padding: 10px 22px; border-radius: 6px; border: none;
+  font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 600;
+  cursor: pointer; transition: all .15s; text-decoration: none; white-space: nowrap;
+}
+.btn-negro   { background: var(--negro);   color: var(--blanco); }
+.btn-negro:hover   { background: var(--g2); }
+.btn-naranja { background: var(--naranja); color: var(--blanco); }
+.btn-naranja:hover { background: #e05200; }
+.btn-outline { background: transparent; color: var(--negro); border: 1.5px solid var(--g6); }
+.btn-outline:hover { border-color: var(--negro); }
+.btn-outline-blanco { background: transparent; color: var(--blanco); border: 1.5px solid rgba(255,255,255,0.2); }
+.btn-outline-blanco:hover { border-color: rgba(255,255,255,0.5); }
+.btn-blanco { background: var(--blanco); color: var(--negro); }
+.btn-blanco:hover { background: var(--g7); }
+.btn-lg { padding: 13px 28px; font-size: 15px; border-radius: 8px; }
+.btn-xl { padding: 16px 36px; font-size: 16px; border-radius: 8px; }
+
+/* ── HERO ── */
+.hero {
+  min-height: 100vh;
+  display: grid; grid-template-columns: 1fr 1fr;
+  align-items: center;
+  padding: 80px 48px 0;
+  max-width: 1200px; margin: 0 auto; gap: 64px;
+}
+.hero-tag {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: var(--g7); color: var(--g3);
+  padding: 5px 12px; border-radius: 4px;
+  font-size: 12px; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase;
+  margin-bottom: 28px; border: 1px solid var(--g6);
+}
+.hero-tag .dot { width: 6px; height: 6px; background: var(--naranja); border-radius: 50%; }
+.hero h1 {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: clamp(42px, 5vw, 72px); font-weight: 700;
+  line-height: 1.04; letter-spacing: -0.04em; margin-bottom: 24px;
+}
+.hero h1 .accent { color: var(--naranja); }
+.hero-sub { font-size: 17px; color: var(--g4); line-height: 1.65; max-width: 460px; margin-bottom: 40px; }
+.hero-btns { display: flex; gap: 10px; flex-wrap: wrap; }
+.hero-social-proof {
+  display: flex; align-items: center; gap: 12px;
+  margin-top: 36px; padding-top: 36px; border-top: 1px solid var(--g6);
+}
+.avatares { display: flex; }
+.avatar {
+  width: 32px; height: 32px; border-radius: 50%;
+  border: 2px solid white; background: var(--g6);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px; margin-left: -8px;
+}
+.avatar:first-child { margin-left: 0; }
+.social-texto { font-size: 13px; color: var(--g4); line-height: 1.4; }
+.social-texto strong { color: var(--negro); font-weight: 600; }
+
+/* Phone mockup */
+.hero-right { display: flex; align-items: center; justify-content: center; padding-top: 60px; }
+.phone-mockup {
+  width: 300px; background: var(--negro); border-radius: 36px; padding: 16px;
+  box-shadow: 0 40px 80px rgba(0,0,0,0.15), 0 0 0 1px rgba(0,0,0,0.08);
+  position: relative;
+}
+.phone-screen { background: var(--blanco); border-radius: 26px; overflow: hidden; min-height: 520px; }
+.phone-status { background: var(--negro); height: 28px; display: flex; align-items: center; justify-content: center; }
+.phone-notch { width: 80px; height: 16px; background: var(--negro); border-radius: 0 0 10px 10px; }
+.mock-header { background: var(--negro); padding: 20px 20px 24px; text-align: center; color: white; }
+.mock-avatar {
+  width: 80px; height: 80px; border-radius: 50%;
+  background: rgba(255,255,255,0.1); margin: 0 auto 12px;
+  display: flex; align-items: center; justify-content: center;
+  border: 2px solid rgba(255,255,255,0.15);
+}
+.mock-nombre { font-family: 'Space Grotesk', sans-serif; font-size: 22px; font-weight: 700; margin-bottom: 4px; }
+.mock-sub { font-size: 12px; opacity: .6; }
+.mock-badges { display: flex; justify-content: center; gap: 6px; margin-top: 10px; }
+.mock-badge { padding: 3px 8px; background: rgba(255,255,255,0.1); border-radius: 4px; font-size: 10px; font-weight: 600; }
+.mock-body { padding: 16px; }
+.mock-card { border: 1px solid var(--g6); border-radius: 10px; padding: 14px; margin-bottom: 10px; }
+.mock-card-title { font-size: 10px; font-weight: 700; color: var(--g4); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
+.mock-contact-btns { display: grid; grid-template-columns: repeat(3,1fr); gap: 6px; }
+.mock-contact-btn { background: var(--g7); border-radius: 6px; padding: 8px 4px; text-align: center; font-size: 9px; font-weight: 600; color: var(--g3); }
+.mock-alerta { background: #FFF3EE; border: 1px solid #FFD4C0; border-radius: 8px; padding: 10px 12px; font-size: 10px; color: #8B3A1A; font-weight: 500; margin-bottom: 8px; }
+.mock-row { display: flex; justify-content: space-between; padding: 7px 0; border-bottom: 1px solid var(--g7); font-size: 11px; }
+.mock-row:last-child { border-bottom: none; }
+.mock-row-key { color: var(--g4); }
+.mock-row-val { font-weight: 600; }
+.float-card {
+  position: absolute; background: white; border-radius: 10px; padding: 10px 14px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.12); border: 1px solid var(--g6);
+  font-size: 12px; white-space: nowrap; animation: floatCard 3s ease-in-out infinite;
+}
+@keyframes floatCard { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-6px)} }
+.float-card-1 { right: -90px; top: 80px; }
+.float-card-2 { left: -90px; bottom: 120px; animation-delay: 1.5s; }
+.float-icon { font-size: 18px; margin-bottom: 3px; }
+.float-label { font-weight: 700; color: var(--negro); font-size: 12px; }
+.float-sub { color: var(--g4); font-size: 11px; }
+
+/* ── STATS ── */
+.divisor { height: 1px; background: var(--g6); max-width: 1200px; margin: 0 auto; }
+.stats-bar { padding: 48px; max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: repeat(4,1fr); }
+.stat-item { padding: 24px 32px; border-right: 1px solid var(--g6); }
+.stat-item:last-child { border-right: none; }
+.stat-num { font-family: 'Space Grotesk', sans-serif; font-size: 40px; font-weight: 700; color: var(--negro); letter-spacing: -0.03em; line-height: 1; margin-bottom: 6px; }
+.stat-num .n { color: var(--naranja); }
+.stat-lbl { font-size: 13px; color: var(--g4); font-weight: 500; }
+
+/* ── SECCIONES ── */
+.section { padding: 96px 48px; max-width: 1200px; margin: 0 auto; }
+.section-full { padding: 96px 48px; }
+.eyebrow { font-size: 11px; font-weight: 700; color: var(--naranja); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 16px; }
+.section-h { font-family: 'Space Grotesk', sans-serif; font-size: clamp(32px,4vw,52px); font-weight: 700; letter-spacing: -0.03em; line-height: 1.08; margin-bottom: 20px; }
+.section-p { font-size: 16px; color: var(--g4); line-height: 1.7; max-width: 520px; margin-bottom: 56px; }
+
+/* ── ÍCONOS SVG ── */
+.ico-wrap { display: inline-block; }
+.ico-wrap svg { display: block; }
+
+/* ── CÓMO FUNCIONA ── */
+.pasos { display: grid; grid-template-columns: repeat(3,1fr); gap: 1px; background: var(--g6); border: 1px solid var(--g6); border-radius: 12px; overflow: hidden; }
+.paso { background: var(--blanco); padding: 40px 36px; }
+.paso-num { font-family: 'Space Grotesk', sans-serif; font-size: 11px; font-weight: 700; color: var(--naranja); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 24px; }
+.paso-ico { margin-bottom: 20px; }
+.paso h3 { font-family: 'Space Grotesk', sans-serif; font-size: 20px; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 10px; }
+.paso p { font-size: 14px; color: var(--g4); line-height: 1.65; }
+
+/* ── FEATURES ── */
+.features-bg { background: var(--g8); }
+.features-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 1px; background: var(--g6); border: 1px solid var(--g6); border-radius: 12px; overflow: hidden; }
+.feature { background: var(--blanco); padding: 36px; transition: background .15s; }
+.feature:hover { background: var(--g8); }
+.feature-ico { margin-bottom: 18px; }
+.feature h3 { font-family: 'Space Grotesk', sans-serif; font-size: 17px; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 8px; }
+.feature p { font-size: 13px; color: var(--g4); line-height: 1.65; }
+.feature-destacada { background: var(--negro); grid-column: span 2; display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 32px; }
+.feature-destacada:hover { background: var(--g1); }
+.feature-destacada h3 { color: var(--blanco); font-size: 22px; }
+.feature-destacada p { color: var(--g5); }
+.feature-pill {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: rgba(255,92,0,0.15); color: var(--naranja);
+  padding: 5px 12px; border-radius: 4px;
+  font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 14px;
+}
+.feature-big-ico { opacity: 0.5; }
+
+/* ── PLANES ── */
+.planes-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; }
+.plan { border: 1px solid var(--g6); border-radius: 12px; padding: 32px; position: relative; transition: border-color .15s; }
+.plan:hover { border-color: var(--negro); }
+.plan.destacado { border-color: var(--negro); background: var(--negro); color: var(--blanco); }
+.plan-tag { position: absolute; top: -11px; left: 24px; background: var(--naranja); color: white; padding: 2px 12px; border-radius: 4px; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+.plan-ico { margin-bottom: 20px; }
+.plan-nombre { font-size: 11px; font-weight: 700; color: var(--g4); text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 16px; }
+.plan.destacado .plan-nombre { color: var(--g5); }
+.plan-precio { font-family: 'Space Grotesk', sans-serif; font-size: 44px; font-weight: 700; letter-spacing: -0.04em; line-height: 1; margin-bottom: 6px; }
+.plan-precio sub { font-size: 14px; font-weight: 500; font-family: 'Inter', sans-serif; color: var(--g4); }
+.plan.destacado .plan-precio sub { color: var(--g5); }
+.plan-desc { font-size: 13px; color: var(--g4); margin-bottom: 24px; padding-bottom: 24px; border-bottom: 1px solid var(--g6); }
+.plan.destacado .plan-desc { color: var(--g5); border-color: rgba(255,255,255,0.1); }
+.plan-items { list-style: none; margin-bottom: 28px; }
+.plan-items li { display: flex; gap: 10px; font-size: 13px; color: var(--g3); margin-bottom: 10px; align-items: flex-start; }
+.plan.destacado .plan-items li { color: rgba(255,255,255,0.7); }
+.plan-items .check { color: var(--negro); font-weight: 700; flex-shrink: 0; }
+.plan.destacado .plan-items .check { color: var(--naranja); }
+.plan-items .cross { color: var(--g5); flex-shrink: 0; }
+.plan-btn { display: block; width: 100%; padding: 12px; border-radius: 6px; font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 600; cursor: pointer; transition: all .15s; text-align: center; text-decoration: none; border: 1.5px solid var(--g6); background: transparent; color: var(--negro); }
+.plan-btn:hover { border-color: var(--negro); }
+.plan-btn-filled { display: block; width: 100%; padding: 12px; border-radius: 6px; font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 600; cursor: pointer; transition: all .15s; text-align: center; text-decoration: none; background: var(--naranja); color: white; border: none; }
+.plan-btn-filled:hover { background: #e05200; }
+
+/* ── TESTIMONIOS ── */
+.test-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; }
+.testimonio { border: 1px solid var(--g6); border-radius: 12px; padding: 28px; transition: border-color .15s; }
+.testimonio:hover { border-color: var(--negro); }
+.stars { color: var(--negro); font-size: 12px; letter-spacing: 2px; margin-bottom: 16px; }
+.test-texto { font-size: 14px; color: var(--g3); line-height: 1.7; margin-bottom: 20px; }
+.test-autor { display: flex; align-items: center; gap: 10px; }
+.test-avatar { width: 36px; height: 36px; border-radius: 50%; background: var(--g7); display: flex; align-items: center; justify-content: center; border: 1px solid var(--g6); overflow: hidden; }
+.test-nombre { font-size: 13px; font-weight: 600; font-family: 'Space Grotesk', sans-serif; }
+.test-mascota { font-size: 11px; color: var(--g4); }
+
+/* ── CTA ── */
+.cta-section { background: var(--negro); padding: 96px 48px; text-align: center; }
+.cta-section h2 { font-family: 'Space Grotesk', sans-serif; font-size: clamp(32px,5vw,60px); font-weight: 700; letter-spacing: -0.04em; color: var(--blanco); max-width: 700px; margin: 0 auto 16px; line-height: 1.08; }
+.cta-section p { font-size: 16px; color: var(--g5); margin-bottom: 40px; }
+.cta-btns { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+
+/* ── FOOTER ── */
+footer { background: var(--negro); border-top: 1px solid rgba(255,255,255,0.06); padding: 32px 48px; }
+.footer-inner { max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; }
+.footer-logo { font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 18px; color: var(--blanco); }
+.footer-logo span { color: var(--naranja); }
+.footer-links { display: flex; gap: 28px; }
+.footer-links a { color: var(--g4); text-decoration: none; font-size: 13px; transition: color .15s; }
+.footer-links a:hover { color: var(--blanco); }
+.footer-copy { font-size: 12px; color: var(--g4); }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 900px) {
+  nav { padding: 0 20px; }
+  .nav-links { display: none; }
+  .hero { grid-template-columns: 1fr; padding: 100px 20px 48px; text-align: center; gap: 48px; }
+  .hero-sub { margin: 0 auto 36px; }
+  .hero-btns { justify-content: center; }
+  .hero-social-proof { justify-content: center; }
+  .hero-right { display: none; }
+  .stats-bar { grid-template-columns: 1fr 1fr; padding: 24px; }
+  .stat-item { border-right: none; border-bottom: 1px solid var(--g6); padding: 20px; }
+  .section, .section-full { padding: 64px 20px; }
+  .pasos, .features-grid, .planes-grid, .test-grid { grid-template-columns: 1fr; }
+  .feature-destacada { grid-column: span 1; grid-template-columns: 1fr; }
+  .feature-big-ico { display: none; }
+  .float-card { display: none; }
+  .cta-section { padding: 64px 20px; }
+  footer { padding: 24px 20px; }
+  .footer-inner { flex-direction: column; text-align: center; }
+}
+</style>
+</head>
+<body>
+
+<!-- ── NAV ── -->
+<nav>
+  <a href="#" class="logo">Pet<span>Tag</span></a>
+  <ul class="nav-links">
+    <li><a href="#como-funciona">Cómo funciona</a></li>
+    <li><a href="#features">Funciones</a></li>
+    <li><a href="#planes">Planes</a></li>
+  </ul>
+  <div class="nav-cta">
+    <a href="login.html" class="btn btn-outline">Ingresar</a>
+    <a href="login.html" class="btn btn-negro">Empezar gratis →</a>
+  </div>
+</nav>
+
+<!-- ── HERO ── -->
+<div class="hero">
+  <div class="hero-left">
+    <div class="hero-tag"><span class="dot"></span>Collar inteligente para mascotas</div>
+    <h1>Tu mascota.<br>Siempre <span class="accent">identificada.</span><br>Siempre segura.</h1>
+    <p class="hero-sub">Un tag QR en el collar conecta a tu mascota con su ficha médica completa, tus datos de contacto y un sistema de alerta si se pierde.</p>
+    <div class="hero-btns">
+      <a href="login.html" class="btn btn-negro btn-xl">Empezar gratis →</a>
+      <a href="#como-funciona" class="btn btn-outline btn-lg">Ver cómo funciona</a>
+    </div>
+    <div class="hero-social-proof">
+      <div class="avatares">
+        <div class="avatar">
+          <svg width="20" height="20" viewBox="0 0 20 20"><circle cx="10" cy="7" r="4" fill="#FF5C00"/><path d="M3 18 Q3 13 10 13 Q17 13 17 18" fill="#FF5C00" opacity="0.4"/></svg>
+        </div>
+        <div class="avatar">
+          <svg width="20" height="20" viewBox="0 0 20 20"><circle cx="10" cy="7" r="4" fill="#FF5C00" opacity="0.6"/><path d="M3 18 Q3 13 10 13 Q17 13 17 18" fill="#FF5C00" opacity="0.3"/></svg>
+        </div>
+        <div class="avatar">
+          <svg width="20" height="20" viewBox="0 0 20 20"><circle cx="10" cy="7" r="4" fill="#FF5C00" opacity="0.8"/><path d="M3 18 Q3 13 10 13 Q17 13 17 18" fill="#FF5C00" opacity="0.5"/></svg>
+        </div>
+      </div>
+      <div class="social-texto"><strong>Cientos de mascotas</strong> ya tienen su identidad digital.<br>Gratis para empezar, sin tarjeta de crédito.</div>
+    </div>
+  </div>
+
+  <div class="hero-right">
+    <div class="phone-mockup">
+      <div class="phone-status"><div class="phone-notch"></div></div>
+      <div class="phone-screen">
+        <div class="mock-header">
+          <div class="mock-avatar">
+            <svg width="52" height="52" viewBox="0 0 52 52"><circle cx="26" cy="18" r="10" fill="#FF5C00"/><path d="M8 44 Q8 32 26 32 Q44 32 44 44" fill="#FF5C00" opacity="0.5"/></svg>
+          </div>
+          <div class="mock-nombre">Mora</div>
+          <div class="mock-sub">Labrador · Hembra · 2 años</div>
+          <div class="mock-badges"><span class="mock-badge">✓ En casa</span><span class="mock-badge">8.2 kg</span></div>
+        </div>
+        <div class="mock-body">
+          <div class="mock-card">
+            <div class="mock-card-title">Contacto inmediato</div>
+            <div class="mock-contact-btns">
+              <div class="mock-contact-btn">Llamar</div>
+              <div class="mock-contact-btn">WhatsApp</div>
+              <div class="mock-contact-btn">Email</div>
+            </div>
+          </div>
+          <div class="mock-card">
+            <div class="mock-card-title">Alerta médica</div>
+            <div class="mock-alerta">Alérgica a penicilina</div>
+          </div>
+          <div class="mock-card">
+            <div class="mock-card-title">Datos</div>
+            <div class="mock-row"><span class="mock-row-key">Raza</span><span class="mock-row-val">Labrador</span></div>
+            <div class="mock-row"><span class="mock-row-key">Microchip</span><span class="mock-row-val">9810200...</span></div>
+            <div class="mock-row"><span class="mock-row-key">Veterinario</span><span class="mock-row-val">Dr. Gómez</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="float-card float-card-1">
+        <div class="float-label">Mora encontrada</div>
+        <div class="float-sub">Hace 2 min · Palermo</div>
+      </div>
+      <div class="float-card float-card-2">
+        <div class="float-label">Vacuna en 3 días</div>
+        <div class="float-sub">Antirrábica · Recordatorio</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── STATS ── -->
+<div class="divisor"></div>
+<div class="stats-bar">
+  <div class="stat-item"><div class="stat-num">300<span class="n">+</span></div><div class="stat-lbl">Tags disponibles</div></div>
+  <div class="stat-item"><div class="stat-num">5<span class="n">s</span></div><div class="stat-lbl">Para ver la ficha completa</div></div>
+  <div class="stat-item"><div class="stat-num">24<span class="n">/7</span></div><div class="stat-lbl">Servidor activo siempre</div></div>
+  <div class="stat-item"><div class="stat-num">$<span class="n">0</span></div><div class="stat-lbl">Para empezar</div></div>
+</div>
+<div class="divisor"></div>
+
+<!-- ── CÓMO FUNCIONA ── -->
+<div class="section" id="como-funciona">
+  <div class="eyebrow">Cómo funciona</div>
+  <h2 class="section-h">Tres pasos.<br>Sin complicaciones.</h2>
+  <p class="section-p">Del collar físico a la ficha digital en minutos. Sin apps que descargar, sin configuraciones complejas.</p>
+
+  <div class="pasos">
+    <div class="paso">
+      <div class="paso-num">— 01</div>
+      <div class="paso-ico">
+        <svg width="64" height="64" viewBox="0 0 64 64"><rect width="64" height="64" rx="13" fill="#111"/><circle cx="32" cy="32" r="19" fill="none" stroke="#FF5C00" stroke-width="2" opacity="0.35"/><circle cx="32" cy="32" r="13" fill="none" stroke="#FF5C00" stroke-width="2"/><rect x="25" y="25" width="14" height="14" rx="2" fill="#FF5C00"/><rect x="28" y="28" width="3.5" height="3.5" rx="0.5" fill="#111"/><rect x="33" y="28" width="3.5" height="3.5" rx="0.5" fill="#111"/><rect x="28" y="33" width="3.5" height="3.5" rx="0.5" fill="#111"/><rect x="33" y="33" width="2" height="2" rx="0.5" fill="#fff"/><rect x="30" y="44" width="4" height="7" rx="2" fill="#FF5C00" opacity="0.5"/></svg>
+      </div>
+      <h3>Comprás el collar</h3>
+      <p>Collar con tag QR + NFC incluido. Un solo pago, sin renovaciones del hardware. Lo recibís en tu casa.</p>
+    </div>
+    <div class="paso">
+      <div class="paso-num">— 02</div>
+      <div class="paso-ico">
+        <svg width="64" height="64" viewBox="0 0 64 64"><rect width="64" height="64" rx="13" fill="#111"/><rect x="14" y="11" width="36" height="42" rx="4" fill="#222"/><rect x="20" y="18" width="18" height="3" rx="1.5" fill="#FF5C00"/><rect x="20" y="25" width="24" height="2.5" rx="1" fill="#FF5C00" opacity="0.35"/><rect x="20" y="31" width="20" height="2.5" rx="1" fill="#FF5C00" opacity="0.35"/><rect x="20" y="37" width="14" height="2.5" rx="1" fill="#FF5C00" opacity="0.35"/><circle cx="40" cy="46" r="8" fill="#FF5C00"/><rect x="36" y="45" width="8" height="2" rx="1" fill="#111"/><rect x="39" y="42" width="2" height="8" rx="1" fill="#111"/></svg>
+      </div>
+      <h3>Registrás a tu mascota</h3>
+      <p>Escaneás el QR con cualquier celular, creás tu cuenta y cargás los datos. En menos de 5 minutos.</p>
+    </div>
+    <div class="paso">
+      <div class="paso-num">— 03</div>
+      <div class="paso-ico">
+        <svg width="64" height="64" viewBox="0 0 64 64"><rect width="64" height="64" rx="13" fill="#111"/><rect x="11" y="11" width="18" height="3" rx="1.5" fill="#FF5C00" opacity="0.4"/><rect x="11" y="11" width="3" height="18" rx="1.5" fill="#FF5C00" opacity="0.4"/><rect x="35" y="11" width="18" height="3" rx="1.5" fill="#FF5C00" opacity="0.4"/><rect x="50" y="11" width="3" height="18" rx="1.5" fill="#FF5C00" opacity="0.4"/><rect x="11" y="50" width="18" height="3" rx="1.5" fill="#FF5C00" opacity="0.4"/><rect x="11" y="35" width="3" height="18" rx="1.5" fill="#FF5C00" opacity="0.4"/><rect x="35" y="50" width="18" height="3" rx="1.5" fill="#FF5C00" opacity="0.4"/><rect x="50" y="35" width="3" height="18" rx="1.5" fill="#FF5C00" opacity="0.4"/><circle cx="32" cy="32" r="9" fill="#FF5C00"/><circle cx="32" cy="32" r="4" fill="#111"/><circle cx="32" cy="32" r="1.5" fill="#FF5C00"/></svg>
+      </div>
+      <h3>Todo el mundo puede ayudar</h3>
+      <p>Si alguien encuentra a tu mascota, escanea el collar y ve tu contacto al instante. Sin apps, sin cuentas.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ── FEATURES ── -->
+<div class="section-full features-bg" id="features">
+  <div class="section" style="padding-top:0;padding-bottom:0;">
+    <div class="eyebrow">Funciones</div>
+    <h2 class="section-h">Todo lo que necesitás.<br>Nada que no necesitás.</h2>
+    <p class="section-p">Diseñado para que cualquier persona que encuentre a tu mascota sepa exactamente qué hacer.</p>
+
+    <div class="features-grid">
+      <div class="feature feature-destacada">
+        <div>
+          <div class="feature-pill">Más importante</div>
+          <h3>Si se pierde, la encontramos juntos</h3>
+          <p>Activás el modo perdido y cualquier persona que escanee el collar puede reportar dónde la vio. Recibís una notificación por WhatsApp al instante.</p>
+        </div>
+        <div class="feature-big-ico">
+          <svg width="100" height="100" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="#FF5C00" opacity="0.12"/><circle cx="50" cy="50" r="26" fill="#FF5C00" opacity="0.25"/><circle cx="50" cy="50" r="13" fill="#FF5C00"/><rect x="47" y="14" width="6" height="20" rx="3" fill="#FF5C00" opacity="0.5"/><rect x="47" y="66" width="6" height="20" rx="3" fill="#FF5C00" opacity="0.5"/><rect x="14" y="47" width="20" height="6" rx="3" fill="#FF5C00" opacity="0.5"/><rect x="66" y="47" width="20" height="6" rx="3" fill="#FF5C00" opacity="0.5"/><circle cx="50" cy="50" r="4" fill="#fff"/></svg>
+        </div>
+      </div>
+
+      <div class="feature">
+        <div class="feature-ico">
+          <svg width="48" height="48" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#111"/><rect x="20" y="6" width="8" height="5" rx="2" fill="#FF5C00" opacity="0.5"/><rect x="16" y="11" width="16" height="28" rx="5" fill="#FF5C00"/><rect x="20" y="11" width="8" height="10" rx="3" fill="#FF5C00" opacity="0.4"/><rect x="20" y="27" width="10" height="2" rx="1" fill="#111" opacity="0.25"/><rect x="20" y="32" width="10" height="2" rx="1" fill="#111" opacity="0.15"/><rect x="20" y="39" width="8" height="5" rx="2" fill="#FF5C00" opacity="0.5"/><circle cx="36" cy="14" r="6" fill="#fff"/><rect x="33" y="13" width="6" height="2" rx="1" fill="#FF5C00"/><rect x="35" y="11" width="2" height="6" rx="1" fill="#FF5C00"/></svg>
+        </div>
+        <h3>Carnet digital de vacunas</h3>
+        <p>Registrá cada vacuna. Te avisamos antes de que venza para que nunca se te pase.</p>
+      </div>
+
+      <div class="feature">
+        <div class="feature-ico">
+          <svg width="48" height="48" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#111"/><rect x="10" y="8" width="28" height="32" rx="4" fill="#222"/><rect x="15" y="14" width="14" height="2.5" rx="1" fill="#FF5C00"/><rect x="15" y="20" width="18" height="2" rx="1" fill="#FF5C00" opacity="0.3"/><rect x="15" y="25" width="14" height="2" rx="1" fill="#FF5C00" opacity="0.3"/><rect x="15" y="30" width="10" height="2" rx="1" fill="#fff" opacity="0.5"/><circle cx="36" cy="36" r="8" fill="#FF5C00"/><rect x="33" y="35" width="6" height="2" rx="1" fill="#111"/><rect x="35" y="32" width="2" height="8" rx="1" fill="#111"/></svg>
+        </div>
+        <h3>Ficha médica completa</h3>
+        <p>Alergias, medicación y veterinario de cabecera visibles para cualquiera que la encuentre.</p>
+      </div>
+
+      <div class="feature">
+        <div class="feature-ico">
+          <svg width="48" height="48" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#111"/><rect x="8" y="12" width="22" height="28" rx="3" fill="#FF5C00" opacity="0.4"/><rect x="16" y="8" width="22" height="28" rx="3" fill="#FF5C00"/><rect x="21" y="14" width="12" height="2" rx="1" fill="#111" opacity="0.35"/><rect x="21" y="19" width="8" height="2" rx="1" fill="#111" opacity="0.25"/><rect x="21" y="24" width="10" height="2" rx="1" fill="#111" opacity="0.25"/></svg>
+        </div>
+        <h3>Documentos en la nube</h3>
+        <p>Radiografías, análisis y certificados siempre disponibles desde el celular.</p>
+      </div>
+
+      <div class="feature">
+        <div class="feature-ico">
+          <svg width="48" height="48" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#111"/><circle cx="18" cy="16" r="8" fill="#FF5C00"/><circle cx="30" cy="16" r="8" fill="#FF5C00" opacity="0.45"/><path d="M6 40 Q6 28 18 28 Q30 28 30 40" fill="#FF5C00"/><path d="M18 40 Q18 28 30 28 Q42 28 42 40" fill="#FF5C00" opacity="0.45"/><circle cx="24" cy="35" r="6" fill="#fff"/></svg>
+        </div>
+        <h3>Red familiar</h3>
+        <p>Agregá a tu pareja, padres o paseador con permisos personalizados.</p>
+      </div>
+
+      <div class="feature">
+        <div class="feature-ico">
+          <svg width="48" height="48" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#111"/><rect x="10" y="18" width="28" height="18" rx="3" fill="#FF5C00" opacity="0.35"/><path d="M10 24 L38 24" stroke="#FF5C00" stroke-width="1.5" fill="none" opacity="0.4"/><rect x="18" y="10" width="12" height="10" rx="2.5" fill="#FF5C00"/><rect x="21" y="13" width="3" height="5" rx="1" fill="#111" opacity="0.4"/><rect x="26" y="13" width="3" height="5" rx="1" fill="#111" opacity="0.4"/><rect x="20" y="36" width="3" height="5" rx="1" fill="#FF5C00"/><rect x="25" y="36" width="3" height="5" rx="1" fill="#FF5C00" opacity="0.5"/></svg>
+        </div>
+        <h3>Documentos de viaje</h3>
+        <p>Pasaporte, certificados sanitarios y vacunas internacionales en un lugar.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── PLANES ── -->
+<div class="section" id="planes">
+  <div class="eyebrow">Planes</div>
+  <h2 class="section-h">El collar se paga una vez.<br>El plan, a tu ritmo.</h2>
+  <p class="section-p">Empezá gratis. Sumá funciones cuando las necesites.</p>
+
+  <div class="planes-grid">
+    <div class="plan">
+      <div class="plan-ico">
+        <svg width="40" height="40" viewBox="0 0 40 40"><rect width="40" height="40" rx="8" fill="#111"/><circle cx="20" cy="18" r="7" fill="#FF5C00" opacity="0.35"/><circle cx="20" cy="18" r="4" fill="#FF5C00"/><rect x="12" y="28" width="16" height="2.5" rx="1" fill="#FF5C00" opacity="0.4"/><rect x="15" y="33" width="10" height="2.5" rx="1" fill="#FF5C00" opacity="0.25"/></svg>
+      </div>
+      <div class="plan-nombre">Free</div>
+      <div class="plan-precio">$0 <sub>/ mes</sub></div>
+      <div class="plan-desc">Para conocer la plataforma</div>
+      <ul class="plan-items">
+        <li><span class="check">✓</span> Ficha pública básica</li>
+        <li><span class="check">✓</span> 1 mascota</li>
+        <li><span class="check">✓</span> Contacto inmediato</li>
+        <li><span class="check">✓</span> Modo perdido básico</li>
+        <li><span class="cross">✗</span> <span style="color:var(--g5)">Carnet de vacunas</span></li>
+        <li><span class="cross">✗</span> <span style="color:var(--g5)">Documentos</span></li>
+        <li><span class="cross">✗</span> <span style="color:var(--g5)">Recordatorios</span></li>
+      </ul>
+      <a href="login.html" class="plan-btn">Empezar gratis</a>
+    </div>
+
+    <div class="plan destacado">
+      <div class="plan-tag">Más elegido</div>
+      <div class="plan-ico">
+        <svg width="40" height="40" viewBox="0 0 40 40"><rect width="40" height="40" rx="8" fill="#FF5C00" opacity="0.15"/><polygon points="20,6 24,16 35,16 26,23 29,33 20,26 11,33 14,23 5,16 16,16" fill="#FF5C00"/><polygon points="20,10 23,18 30,18 24,22 27,30 20,25 13,30 16,22 10,18 17,18" fill="#111"/><circle cx="20" cy="20" r="3" fill="#FF5C00" opacity="0.6"/></svg>
+      </div>
+      <div class="plan-nombre">Premium</div>
+      <div class="plan-precio">$3.500 <sub>/ mes</sub></div>
+      <div class="plan-desc">Para dueños que cuidan de verdad</div>
+      <ul class="plan-items">
+        <li><span class="check">✓</span> Todo lo del plan free</li>
+        <li><span class="check">✓</span> Hasta 5 mascotas</li>
+        <li><span class="check">✓</span> Carnet digital de vacunas</li>
+        <li><span class="check">✓</span> Documentos ilimitados</li>
+        <li><span class="check">✓</span> Recordatorios por email</li>
+        <li><span class="check">✓</span> Mapa de avistamientos</li>
+        <li><span class="cross">✗</span> <span style="opacity:.4">Alertas por WhatsApp</span></li>
+      </ul>
+      <a href="login.html" class="plan-btn-filled">Suscribirme</a>
+    </div>
+
+    <div class="plan">
+      <div class="plan-ico">
+        <svg width="40" height="40" viewBox="0 0 40 40"><rect width="40" height="40" rx="8" fill="#111"/><polygon points="20,6 24,16 35,16 26,23 29,33 20,26 11,33 14,23 5,16 16,16" fill="#FF5C00" opacity="0.7"/><polygon points="20,10 23,18 30,18 24,22 27,30 20,25 13,30 16,22 10,18 17,18" fill="#111"/><circle cx="20" cy="20" r="2.5" fill="#FF5C00" opacity="0.5"/><circle cx="32" cy="10" r="5" fill="#FF5C00"/><rect x="30" y="9" width="4" height="1.5" rx="0.5" fill="#111"/><rect x="31.5" y="7.5" width="1.5" height="5" rx="0.5" fill="#111"/></svg>
+      </div>
+      <div class="plan-nombre">Premium+</div>
+      <div class="plan-precio">$6.500 <sub>/ mes</sub></div>
+      <div class="plan-desc">Para familias con varias mascotas</div>
+      <ul class="plan-items">
+        <li><span class="check">✓</span> Todo lo del Premium</li>
+        <li><span class="check">✓</span> Mascotas ilimitadas</li>
+        <li><span class="check">✓</span> Alertas por WhatsApp</li>
+        <li><span class="check">✓</span> Red familiar con permisos</li>
+        <li><span class="check">✓</span> Historial de peso</li>
+        <li><span class="check">✓</span> Documentos de viaje</li>
+        <li><span class="check">✓</span> Atención prioritaria</li>
+      </ul>
+      <a href="login.html" class="plan-btn">Suscribirme</a>
+    </div>
+  </div>
+</div>
+
+<!-- ── TESTIMONIOS ── -->
+<div class="section" style="padding-top:0;">
+  <div class="eyebrow">Testimonios</div>
+  <h2 class="section-h">Lo que dicen<br>los dueños.</h2>
+  <div class="test-grid">
+    <div class="testimonio">
+      <div class="stars">★★★★★</div>
+      <p class="test-texto">"Toby se escapó por la puerta del jardín. A los 20 minutos recibí un mensaje de un vecino con la ubicación exacta. Increíble."</p>
+      <div class="test-autor">
+        <div class="test-avatar"><svg width="22" height="22" viewBox="0 0 22 22"><circle cx="11" cy="7" r="4" fill="#FF5C00"/><path d="M3 20 Q3 14 11 14 Q19 14 19 20" fill="#FF5C00" opacity="0.4"/></svg></div>
+        <div><div class="test-nombre">Martín G.</div><div class="test-mascota">Dueño de Toby, Beagle</div></div>
+      </div>
+    </div>
+    <div class="testimonio">
+      <div class="stars">★★★★★</div>
+      <p class="test-texto">"Por fin tengo todos los documentos de Luna en un solo lugar. El veterinario ya puede ver su historial desde el celular."</p>
+      <div class="test-autor">
+        <div class="test-avatar"><svg width="22" height="22" viewBox="0 0 22 22"><circle cx="11" cy="7" r="4" fill="#FF5C00"/><path d="M3 20 Q3 14 11 14 Q19 14 19 20" fill="#FF5C00" opacity="0.4"/></svg></div>
+        <div><div class="test-nombre">Valentina R.</div><div class="test-mascota">Dueña de Luna, Gata angora</div></div>
+      </div>
+    </div>
+    <div class="testimonio">
+      <div class="stars">★★★★★</div>
+      <p class="test-texto">"Tengo 3 perros y siempre me olvidaba de las vacunas. Ahora me llega un recordatorio automático 15 días antes."</p>
+      <div class="test-autor">
+        <div class="test-avatar"><svg width="22" height="22" viewBox="0 0 22 22"><circle cx="11" cy="7" r="4" fill="#FF5C00"/><path d="M3 20 Q3 14 11 14 Q19 14 19 20" fill="#FF5C00" opacity="0.4"/></svg></div>
+        <div><div class="test-nombre">Pablo M.</div><div class="test-mascota">Dueño de 3 perros</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── CTA FINAL ── -->
+<div class="cta-section">
+  <h2>¿Tu mascota ya tiene<br>su identidad digital?</h2>
+  <p>Empezá gratis hoy. El collar lo recibís en tu casa.</p>
+  <div class="cta-btns">
+    <a href="login.html" class="btn btn-naranja btn-xl">Empezar gratis →</a>
+    <a href="#planes" class="btn btn-outline-blanco btn-lg">Ver planes</a>
+  </div>
+</div>
+
+<!-- ── FOOTER ── -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-logo">Pet<span>Tag</span></div>
+    <div class="footer-links">
+      <a href="#">Términos</a>
+      <a href="#">Privacidad</a>
+      <a href="#">Contacto</a>
+    </div>
+    <div class="footer-copy">© 2026 PetTag. Hecho en Argentina.</div>
+  </div>
+</footer>
+
+</body>
+</html>
