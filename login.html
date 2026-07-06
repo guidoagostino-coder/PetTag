@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PetTag — Ingresar</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap');
+
+:root {
+  --negro:   #000000;
+  --blanco:  #FFFFFF;
+  --naranja: #FF5C00;
+  --g1: #111111;
+  --g2: #222222;
+  --g3: #444444;
+  --g4: #888888;
+  --g5: #BBBBBB;
+  --g6: #E8E8E8;
+  --g7: #F4F4F4;
+  --g8: #FAFAFA;
+  --rojo: #E53935;
+  --rojo-cl: #FFF0F0;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Inter', sans-serif;
+  background: var(--g8);
+  color: var(--negro);
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── LADO IZQUIERDO — visual ── */
+.left {
+  background: var(--negro);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 48px;
+  position: relative;
+  overflow: hidden;
+}
+
+.left-logo {
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700;
+  font-size: 22px;
+  color: var(--blanco);
+  text-decoration: none;
+  letter-spacing: -0.5px;
+}
+.left-logo span { color: var(--naranja); }
+
+.left-center {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 32px;
+}
+
+.left-headline {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 40px;
+  font-weight: 700;
+  color: var(--blanco);
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+}
+
+.left-headline .acc { color: var(--naranja); }
+
+.left-sub {
+  font-size: 15px;
+  color: var(--g4);
+  line-height: 1.65;
+  max-width: 360px;
+}
+
+/* Feature list */
+.feature-list { list-style: none; display: flex; flex-direction: column; gap: 14px; }
+.feature-list li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 14px;
+  color: var(--g5);
+}
+.feature-list li .dot {
+  width: 28px; height: 28px;
+  border-radius: 6px;
+  background: rgba(255,92,0,0.15);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+
+/* Decoración fondo */
+.bg-circle {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+}
+.bg-circle-1 {
+  width: 400px; height: 400px;
+  background: radial-gradient(circle, rgba(255,92,0,0.08) 0%, transparent 70%);
+  bottom: -100px; right: -100px;
+}
+.bg-circle-2 {
+  width: 200px; height: 200px;
+  background: radial-gradient(circle, rgba(255,92,0,0.05) 0%, transparent 70%);
+  top: 100px; right: 50px;
+}
+
+.left-footer {
+  font-size: 12px;
+  color: var(--g3);
+}
+
+/* ── LADO DERECHO — formulario ── */
+.right {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 64px;
+}
+
+.form-wrap {
+  width: 100%;
+  max-width: 380px;
+}
+
+.form-title {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  margin-bottom: 6px;
+}
+
+.form-sub {
+  font-size: 14px;
+  color: var(--g4);
+  margin-bottom: 32px;
+}
+
+/* Tabs */
+.tabs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px;
+  background: var(--g7);
+  border-radius: 8px;
+  padding: 4px;
+  margin-bottom: 28px;
+}
+
+.tab {
+  padding: 9px;
+  border-radius: 6px;
+  border: none;
+  background: transparent;
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--g4);
+  cursor: pointer;
+  transition: all .15s;
+}
+.tab.activo {
+  background: var(--blanco);
+  color: var(--negro);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+}
+
+/* Form groups */
+.form-group { margin-bottom: 16px; }
+
+label {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--g3);
+  margin-bottom: 6px;
+  letter-spacing: 0.2px;
+}
+
+input {
+  width: 100%;
+  padding: 11px 14px;
+  border: 1.5px solid var(--g6);
+  border-radius: 7px;
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  color: var(--negro);
+  background: var(--blanco);
+  outline: none;
+  transition: border-color .15s;
+}
+input:focus { border-color: var(--negro); }
+input::placeholder { color: var(--g5); }
+
+/* Botones */
+.btn-submit {
+  width: 100%;
+  padding: 13px;
+  border-radius: 7px;
+  border: none;
+  background: var(--negro);
+  color: var(--blanco);
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all .15s;
+  margin-top: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+.btn-submit:hover { background: var(--g2); }
+.btn-submit:disabled { background: var(--g5); cursor: not-allowed; }
+
+.btn-submit.naranja { background: var(--naranja); }
+.btn-submit.naranja:hover { background: #e05200; }
+
+/* Link olvidé contraseña */
+.forgot {
+  text-align: right;
+  margin-bottom: 4px;
+}
+.forgot a {
+  font-size: 12px;
+  color: var(--g4);
+  text-decoration: none;
+  transition: color .15s;
+}
+.forgot a:hover { color: var(--negro); }
+
+/* Divisor */
+.or-divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 20px 0;
+  font-size: 12px;
+  color: var(--g5);
+}
+.or-divider::before, .or-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--g6);
+}
+
+/* Mensajes */
+.msg {
+  padding: 11px 14px;
+  border-radius: 7px;
+  font-size: 13px;
+  margin-bottom: 16px;
+  display: none;
+}
+.msg-error   { background: var(--rojo-cl); color: var(--rojo); border: 1px solid #FFCDD2; }
+.msg-success { background: #F0FFF4; color: #2E7D32; border: 1px solid #C8E6C9; }
+
+/* Spinner */
+.spinner {
+  width: 16px; height: 16px;
+  border: 2px solid rgba(255,255,255,.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin .7s linear infinite;
+  display: none;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* Pantalla confirmación */
+#pantalla-confirmacion {
+  display: none;
+  text-align: center;
+  padding: 16px 0;
+}
+.confirm-ico {
+  width: 64px; height: 64px;
+  background: var(--g7);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 20px;
+}
+#pantalla-confirmacion h2 {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 22px; font-weight: 700; margin-bottom: 8px;
+}
+#pantalla-confirmacion p {
+  font-size: 14px; color: var(--g4); line-height: 1.65; margin-bottom: 24px;
+}
+
+/* Footer del form */
+.form-footer {
+  margin-top: 24px;
+  padding-top: 24px;
+  border-top: 1px solid var(--g6);
+  font-size: 12px;
+  color: var(--g4);
+  text-align: center;
+  line-height: 1.6;
+}
+.form-footer a { color: var(--negro); font-weight: 600; text-decoration: none; }
+
+/* Responsive */
+@media (max-width: 768px) {
+  body { grid-template-columns: 1fr; }
+  .left { display: none; }
+  .right { padding: 32px 24px; align-items: flex-start; padding-top: 60px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ── LADO IZQUIERDO ── -->
+<div class="left">
+  <div class="bg-circle bg-circle-1"></div>
+  <div class="bg-circle bg-circle-2"></div>
+
+  <a href="index.html" class="left-logo">Pet<span>Tag</span></a>
+
+  <div class="left-center">
+    <div>
+      <div class="left-headline">
+        Tu mascota,<br>siempre <span class="acc">conectada</span><br>a vos.
+      </div>
+      <p class="left-sub" style="margin-top:16px;">Gestioná la salud, documentos y seguridad de tus mascotas desde un solo lugar.</p>
+    </div>
+
+    <ul class="feature-list">
+      <li>
+        <div class="dot">
+          <svg width="14" height="14" viewBox="0 0 14 14"><circle cx="7" cy="4" r="3" fill="#FF5C00"/><path d="M1 12 Q1 8 7 8 Q13 8 13 12" fill="#FF5C00" opacity="0.5"/></svg>
+        </div>
+        Ficha pública visible con cualquier celular
+      </li>
+      <li>
+        <div class="dot">
+          <svg width="14" height="14" viewBox="0 0 14 14"><rect x="3" y="2" width="8" height="10" rx="1.5" fill="#FF5C00" opacity="0.4"/><rect x="5" y="1" width="8" height="10" rx="1.5" fill="#FF5C00"/></svg>
+        </div>
+        Carnet de vacunas y recordatorios automáticos
+      </li>
+      <li>
+        <div class="dot">
+          <svg width="14" height="14" viewBox="0 0 14 14"><path d="M7 1 L9 5 L13 5 L10 8 L11 12 L7 9 L3 12 L4 8 L1 5 L5 5 Z" fill="#FF5C00"/></svg>
+        </div>
+        Alertas por WhatsApp si se pierde
+      </li>
+      <li>
+        <div class="dot">
+          <svg width="14" height="14" viewBox="0 0 14 14"><path d="M7 1 L8.5 5.5 L13 5.5 L9.5 8.5 L11 13 L7 10 L3 13 L4.5 8.5 L1 5.5 L5.5 5.5 Z" fill="#FF5C00" opacity="0.5"/><circle cx="7" cy="7" r="2" fill="#FF5C00"/></svg>
+        </div>
+        Documentos y ficha médica siempre disponibles
+      </li>
+    </ul>
+  </div>
+
+  <div class="left-footer">© 2026 PetTag · Hecho en Argentina</div>
+</div>
+
+<!-- ── LADO DERECHO ── -->
+<div class="right">
+  <div class="form-wrap">
+
+    <div id="pantalla-form">
+      <div class="form-title" id="form-title">Bienvenido</div>
+      <div class="form-sub" id="form-sub">Ingresá a tu cuenta para gestionar tus mascotas.</div>
+
+      <!-- Tabs -->
+      <div class="tabs">
+        <button class="tab activo" id="tab-login" onclick="verTab('login')">Ingresar</button>
+        <button class="tab" id="tab-registro" onclick="verTab('registro')">Crear cuenta</button>
+      </div>
+
+      <!-- Mensajes -->
+      <div id="msg-error"   class="msg msg-error"></div>
+      <div id="msg-success" class="msg msg-success"></div>
+
+      <!-- ── LOGIN ── -->
+      <div id="form-login">
+        <div class="form-group">
+          <label>Email</label>
+          <input type="email" id="login-email" placeholder="juan@email.com" autocomplete="email">
+        </div>
+        <div class="form-group">
+          <label>Contraseña</label>
+          <input type="password" id="login-pass" placeholder="••••••••" autocomplete="current-password">
+        </div>
+        <div class="forgot"><a href="#" onclick="verOlvide()">¿Olvidaste tu contraseña?</a></div>
+        <button class="btn-submit" id="btn-login" onclick="login()">
+          <span id="spin-login" class="spinner"></span>
+          Ingresar
+        </button>
+      </div>
+
+      <!-- ── REGISTRO ── -->
+      <div id="form-registro" style="display:none;">
+        <div class="form-group">
+          <label>Nombre completo</label>
+          <input type="text" id="reg-nombre" placeholder="Juan Pérez">
+        </div>
+        <div class="form-group">
+          <label>Email</label>
+          <input type="email" id="reg-email" placeholder="juan@email.com" autocomplete="email">
+        </div>
+        <div class="form-group">
+          <label>WhatsApp</label>
+          <input type="tel" id="reg-whatsapp" placeholder="+54 9 11 1234-5678">
+        </div>
+        <div class="form-group">
+          <label>Contraseña</label>
+          <input type="password" id="reg-pass" placeholder="Mínimo 6 caracteres" autocomplete="new-password">
+        </div>
+        <div class="form-group">
+          <label>Confirmar contraseña</label>
+          <input type="password" id="reg-pass2" placeholder="Repetí la contraseña">
+        </div>
+        <button class="btn-submit naranja" id="btn-registro" onclick="registro()">
+          <span id="spin-reg" class="spinner"></span>
+          Crear cuenta gratis
+        </button>
+      </div>
+
+      <!-- ── OLVIDÉ CONTRASEÑA ── -->
+      <div id="form-olvide" style="display:none;">
+        <p style="font-size:13px;color:var(--g4);margin-bottom:16px;line-height:1.6;">Ingresá tu email y te mandamos un link para restablecer tu contraseña.</p>
+        <div class="form-group">
+          <label>Email</label>
+          <input type="email" id="olvide-email" placeholder="juan@email.com">
+        </div>
+        <button class="btn-submit" id="btn-olvide" onclick="olvideClave()">
+          <span id="spin-olvide" class="spinner"></span>
+          Enviar link
+        </button>
+        <div style="text-align:center;margin-top:14px;">
+          <a href="#" onclick="verTab('login')" style="font-size:12px;color:var(--g4);text-decoration:none;">← Volver al login</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── CONFIRMACIÓN ── -->
+    <div id="pantalla-confirmacion">
+      <div class="confirm-ico">
+        <svg width="32" height="32" viewBox="0 0 32 32"><circle cx="16" cy="16" r="14" fill="none" stroke="#FF5C00" stroke-width="2"/><path d="M10 16 L14 20 L22 12" fill="none" stroke="#FF5C00" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <h2 id="confirm-titulo">Revisá tu email</h2>
+      <p id="confirm-texto">Te mandamos un link de confirmación. Hacé clic en el link para activar tu cuenta.</p>
+      <a href="#" onclick="verTab('login')" style="font-size:13px;color:var(--negro);font-weight:600;text-decoration:none;">← Volver al login</a>
+    </div>
+
+    <div class="form-footer" id="form-footer">
+      Al registrarte aceptás los <a href="#">términos y condiciones</a> y la <a href="#">política de privacidad</a>.
+    </div>
+  </div>
+</div>
+
+<!-- Supabase SDK -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const SUPABASE_URL = 'https://gcombsqzagatrukrxbnv.supabase.co'
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imdjb21ic3F6YWdhdHJ1a3J4Ym52Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI2NTA2MDYsImV4cCI6MjA5ODIyNjYwNn0.ONmGnL988z01rrUmh4p9gIjmJu_PcMGCitsHWU3-HR4'
+const { createClient } = supabase
+const sb = createClient(SUPABASE_URL, SUPABASE_KEY)
+
+// ── TABS ──
+function verTab(tab) {
+  document.getElementById('form-login').style.display    = tab === 'login'    ? 'block' : 'none'
+  document.getElementById('form-registro').style.display = tab === 'registro' ? 'block' : 'none'
+  document.getElementById('form-olvide').style.display   = tab === 'olvide'   ? 'block' : 'none'
+  document.getElementById('tab-login').classList.toggle('activo',    tab === 'login')
+  document.getElementById('tab-registro').classList.toggle('activo', tab === 'registro')
+  document.getElementById('tabs') // reset tabs visibility
+  ocultarMsg()
+
+  if (tab === 'registro') {
+    document.getElementById('form-title').textContent = 'Crear cuenta'
+    document.getElementById('form-sub').textContent = 'Gratis para siempre. Sin tarjeta de crédito.'
+  } else {
+    document.getElementById('form-title').textContent = 'Bienvenido'
+    document.getElementById('form-sub').textContent = 'Ingresá a tu cuenta para gestionar tus mascotas.'
+  }
+}
+
+function verOlvide() {
+  document.getElementById('form-login').style.display  = 'none'
+  document.getElementById('form-olvide').style.display = 'block'
+  document.getElementById('tab-login').classList.remove('activo')
+  document.getElementById('form-title').textContent = 'Recuperar acceso'
+  document.getElementById('form-sub').textContent   = 'Te mandamos un link a tu email.'
+}
+
+// ── MENSAJES ──
+function mostrarError(texto) {
+  const el = document.getElementById('msg-error')
+  el.textContent = texto
+  el.style.display = 'block'
+  document.getElementById('msg-success').style.display = 'none'
+}
+function mostrarExito(texto) {
+  const el = document.getElementById('msg-success')
+  el.textContent = texto
+  el.style.display = 'block'
+  document.getElementById('msg-error').style.display = 'none'
+}
+function ocultarMsg() {
+  document.getElementById('msg-error').style.display   = 'none'
+  document.getElementById('msg-success').style.display = 'none'
+}
+
+// ── SPINNER ──
+function cargando(btnId, spinId, estado) {
+  const btn  = document.getElementById(btnId)
+  const spin = document.getElementById(spinId)
+  btn.disabled = estado
+  spin.style.display = estado ? 'block' : 'none'
+}
+
+// ── LOGIN ──
+async function login() {
+  const email = document.getElementById('login-email').value.trim()
+  const pass  = document.getElementById('login-pass').value
+  if (!email || !pass) { mostrarError('Completá email y contraseña.'); return }
+
+  cargando('btn-login', 'spin-login', true)
+  const { data, error } = await sb.auth.signInWithPassword({ email, password: pass })
+  cargando('btn-login', 'spin-login', false)
+
+  if (error) {
+    const msgs = {
+      'Invalid login credentials': 'Email o contraseña incorrectos.',
+      'Email not confirmed': 'Confirmá tu email antes de ingresar.'
+    }
+    mostrarError(msgs[error.message] || error.message)
+    return
+  }
+
+  window.location.href = 'panel.html'
+}
+
+// ── REGISTRO ──
+async function registro() {
+  const nombre   = document.getElementById('reg-nombre').value.trim()
+  const email    = document.getElementById('reg-email').value.trim()
+  const whatsapp = document.getElementById('reg-whatsapp').value.trim()
+  const pass     = document.getElementById('reg-pass').value
+  const pass2    = document.getElementById('reg-pass2').value
+
+  if (!nombre || !email || !pass) { mostrarError('Completá todos los campos.'); return }
+  if (pass.length < 6)            { mostrarError('La contraseña debe tener al menos 6 caracteres.'); return }
+  if (pass !== pass2)             { mostrarError('Las contraseñas no coinciden.'); return }
+
+  cargando('btn-registro', 'spin-reg', true)
+
+  const { data, error } = await sb.auth.signUp({
+    email, password: pass,
+    options: { data: { nombre_completo: nombre, whatsapp } }
+  })
+
+  cargando('btn-registro', 'spin-reg', false)
+
+  if (error) { mostrarError(error.message); return }
+
+  // Insertar en tabla duenos
+  await sb.from('duenos').upsert({
+    id:              data.user.id,
+    nombre_completo: nombre,
+    email,
+    whatsapp
+  }, { onConflict: 'id' })
+
+  // Mostrar confirmación
+  document.getElementById('pantalla-form').style.display        = 'none'
+  document.getElementById('form-footer').style.display          = 'none'
+  document.getElementById('pantalla-confirmacion').style.display = 'block'
+}
+
+// ── OLVIDÉ CONTRASEÑA ──
+async function olvideClave() {
+  const email = document.getElementById('olvide-email').value.trim()
+  if (!email) { mostrarError('Ingresá tu email.'); return }
+
+  cargando('btn-olvide', 'spin-olvide', true)
+  const { error } = await sb.auth.resetPasswordForEmail(email, {
+    redirectTo: window.location.origin + '/panel.html'
+  })
+  cargando('btn-olvide', 'spin-olvide', false)
+
+  if (error) { mostrarError(error.message); return }
+
+  document.getElementById('confirm-titulo').textContent = 'Revisá tu email'
+  document.getElementById('confirm-texto').textContent  = 'Te mandamos un link para restablecer tu contraseña. Revisá también la carpeta de spam.'
+  document.getElementById('pantalla-form').style.display         = 'none'
+  document.getElementById('form-footer').style.display           = 'none'
+  document.getElementById('pantalla-confirmacion').style.display = 'block'
+}
+
+// ── VERIFICAR SESIÓN ──
+sb.auth.getSession().then(({ data }) => {
+  if (data.session) window.location.href = 'panel.html'
+})
+
+// ── ENTER ──
+document.addEventListener('keydown', e => {
+  if (e.key !== 'Enter') return
+  const loginVisible    = document.getElementById('form-login').style.display    !== 'none'
+  const registroVisible = document.getElementById('form-registro').style.display !== 'none'
+  const olvideVisible   = document.getElementById('form-olvide').style.display   !== 'none'
+  if (loginVisible)    login()
+  if (registroVisible) registro()
+  if (olvideVisible)   olvideClave()
+})
+</script>
+</body>
+</html>
