@@ -284,6 +284,39 @@ app.post('/avistamientos', async (req, res) => {
     .single()
 
   if (error) return res.status(500).json({ error: error.message })
+
+  // Notificar al dueño por WhatsApp
+  const { data: mascota } = await supabase
+    .from('mascotas')
+    .select('nombre, dueno_id')
+    .eq('id', mascota_id)
+    .single()
+
+  if (mascota) {
+    const { data: dueno } = await supabase
+      .from('duenos')
+      .select('whatsapp, nombre_completo')
+      .eq('id', mascota.dueno_id)
+      .single()
+
+    if (dueno?.whatsapp) {
+      const tipoLabel = {
+        la_encontre:      '🐾 La encontró',
+        la_estoy_viendo:  '👁️ La está viendo',
+        la_tengo_segura:  '🔒 La tiene resguardada'
+      }
+      await whatsappBot.enviar(dueno.whatsapp,
+        `🚨 *¡Encontraron a ${mascota.nombre}!*\n\n` +
+        `*Tipo:* ${tipoLabel[tipo_reporte]}\n` +
+        `*Dirección:* ${direccion_aproximada || 'No especificada'}\n` +
+        `*Rescatista:* ${nombre_rescatista || 'Anónimo'}\n` +
+        `*Teléfono:* ${telefono_rescatista || 'No dejó'}\n` +
+        `*Mensaje:* ${mensaje || 'Sin mensaje'}\n\n` +
+        `Entrá a tu panel para ver el mapa con la ubicación exacta.`
+      )
+    }
+  }
+
   res.status(201).json({ ok: true, avistamiento: data })
 })
 
@@ -395,7 +428,6 @@ app.post('/whatsapp', async (req, res) => {
   const texto    = req.body.Body || ''
   const mediaUrl = req.body.MediaUrl0 || null
 
-  // Responder a Twilio inmediatamente
   res.status(200).send('<Response></Response>')
 
   if (!numero) {
